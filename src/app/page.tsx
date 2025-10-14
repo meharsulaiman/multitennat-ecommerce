@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Home() {
   return (
-    <div>
-      <Button>Hello World</Button>
+    <div className="grid place-items-center pt-10">
+      <Textarea placeholder="Hello world" />
     </div>
   );
 }
