@@ -1,0 +1,104 @@
+# ==========================================
+# Docker Ignore File
+# ==========================================
+# Files and directories to exclude from Docker build context
+# This speeds up builds and reduces image size
+# ==========================================
+
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+.next
+.next/*
+out
+dist
+build
+
+# Testing
+coverage
+.nyc_output
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+
+# IDEs and Editors
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+CONTRIBUTING.md
+LICENSE
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+
+# Logs
+logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Backups
+backups
+*.backup
+*.bak
+
+# Database files (local)
+*.sqlite
+*.sqlite3
+*.db
+
+# Media uploads (exclude during build, mount as volume instead)
+public/media
+uploads
+
+# Lock files (keep package-lock.json, exclude others)
+yarn.lock
+pnpm-lock.yaml
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Payload CMS
+.payload
+media
+
+# Misc
+.cache
+.eslintcache

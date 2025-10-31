@@ -1,0 +1,117 @@
+# ==========================================
+# Docker Compose - Development Environment
+# ==========================================
+# This configuration is optimized for local development
+# with hot-reload, volume mounting, and easy debugging
+# ==========================================
+
+services:
+  # ==========================================
+  # MongoDB Database Service
+  # ==========================================
+  mongodb:
+    image: mongo:latest
+    container_name: multitennat-ecommerce-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-multitennat_ecommerce}
+    volumes:
+      # Persistent data storage
+      - mongodb_data:/data/db
+      # MongoDB configuration
+      - mongodb_config:/data/configdb
+      # Init scripts (optional - for seeding)
+      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # ==========================================
+  # Next.js Application Service (Development)
+  # ==========================================
+  app:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+      target: development
+      args:
+        - NODE_ENV=development
+    container_name: multitennat-ecommerce-app-dev
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      # Node environment
+      NODE_ENV: development
+
+      # Database configuration
+      DATABASE_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME:-admin}:${MONGO_INITDB_ROOT_PASSWORD:-admin123}@mongodb:27017/${MONGO_INITDB_DATABASE:-multitennat_ecommerce}?authSource=admin
+
+      # Payload CMS configuration
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-your-secret-key-change-this-in-production}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+
+      # Development settings
+      WATCHPACK_POLLING: 'true'
+    volumes:
+      # Mount source code for hot-reload (exclude node_modules)
+      - ..:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - app-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    command: sh -c "bun run dev"
+
+  # ==========================================
+  # Mongo Express - MongoDB Web UI (Optional)
+  # ==========================================
+  mongo-express:
+    image: mongo-express:latest
+    container_name: multitennat-ecommerce-mongo-express
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-admin123}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME:-admin}:${MONGO_INITDB_ROOT_PASSWORD:-admin123}@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD:-admin123}
+    networks:
+      - app-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  app-network:
+    driver: bridge
+    name: multitennat-ecommerce-network
+
+# ==========================================
+# Volumes for Data Persistence
+# ==========================================
+volumes:
+  mongodb_data:
+    driver: local
+    name: multitennat-ecommerce-mongodb-data
+  mongodb_config:
+    driver: local
+    name: multitennat-ecommerce-mongodb-config

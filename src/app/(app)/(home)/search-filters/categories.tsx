@@ -1,12 +1,12 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { CategoryDropdown } from "./category-dropdown";
-import { CustomCategory } from "../types";
-import { Button } from "@/components/ui/button";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { CategoryDropdown } from './category-dropdown';
+import { CustomCategory } from '../types';
+import { Button } from '@/components/ui/button';
 
-import { cn } from "@/lib/utils";
-import { ListFilterIcon } from "lucide-react";
-import { CategoriesSidebar } from "./categories-sidebar";
+import { cn } from '@/lib/utils';
+import { ListFilterIcon } from 'lucide-react';
+import { CategoriesSidebar } from './categories-sidebar';
 
 interface Props {
   data: CustomCategory[];
@@ -20,7 +20,7 @@ export const Categories = ({ data }: Props) => {
   const [isAnyHovered, setIsAnyHovered] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const activeCategory = "all";
+  const activeCategory = 'all';
 
   const activeCategoryIndex = data.findIndex(
     (category) => category.slug === activeCategory
@@ -57,18 +57,14 @@ export const Categories = ({ data }: Props) => {
   }, [data.length]);
 
   return (
-    <div className="relative w-full">
-      <CategoriesSidebar
-        data={data}
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-      />
+    <div className='relative w-full'>
+      <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
 
       {/* hidden to measure all items */}
       <div
         ref={measureRef}
-        className="absolute opacity-0 invisible pointer-events-none flex"
-        style={{ position: "fixed", top: -9999, left: -9999 }}
+        className='absolute opacity-0 invisible pointer-events-none flex'
+        style={{ position: 'fixed', top: -9999, left: -9999 }}
       >
         {data.map((category) => (
           <div key={category.id}>
@@ -83,7 +79,7 @@ export const Categories = ({ data }: Props) => {
 
       <div
         ref={containerRef}
-        className="flex flex-nowrap items-center"
+        className='flex flex-nowrap items-center'
         onMouseEnter={() => setIsAnyHovered(true)}
         onMouseLeave={() => setIsAnyHovered(false)}
       >
@@ -97,18 +93,18 @@ export const Categories = ({ data }: Props) => {
           </div>
         ))}
 
-        <div className="shrink-0" ref={viewAllRef}>
+        <div className='shrink-0' ref={viewAllRef}>
           <Button
             onClick={() => setIsSidebarOpen(true)}
             className={cn(
-              "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
+              'h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black',
               isActiveCategoryHidden &&
                 !isAnyHovered &&
-                "bg-white border-primary"
+                'bg-white border-primary'
             )}
           >
             View All
-            <ListFilterIcon className="ml-2" />
+            <ListFilterIcon className='ml-2' />
           </Button>
         </div>
       </div>
